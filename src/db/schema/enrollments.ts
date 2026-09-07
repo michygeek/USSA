@@ -1,0 +1,19 @@
+import { pgTable, uuid, timestamp, pgEnum, uniqueIndex } from 'drizzle-orm/pg-core';
+import { users } from './users';
+import { courses } from './courses';
+
+export const enrollmentStatusEnum = pgEnum('enrollment_status', ['active']);
+
+export const enrollments = pgTable(
+  'enrollments',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull().references(() => users.id),
+    courseId: uuid('course_id').notNull().references(() => courses.id, { onDelete: 'cascade' }),
+    status: enrollmentStatusEnum('status').notNull().default('active'),
+    enrolledAt: timestamp('enrolled_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdCourseIdUnique: uniqueIndex('enrollments_user_id_course_id_unique').on(table.userId, table.courseId),
+  }),
+);
