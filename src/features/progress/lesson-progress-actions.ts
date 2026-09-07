@@ -1,6 +1,5 @@
 'use server';
 
-import { and, eq } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { lessonProgress } from '@/db/schema';
 import { ApiError } from '@/api-response/api-error';
