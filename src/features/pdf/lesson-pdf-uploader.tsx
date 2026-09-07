@@ -25,7 +25,9 @@ export function LessonPdfUploader({ lessonId, hasExistingPdf }: { lessonId: stri
 
       setUploadStatus('uploading');
       const supabaseBrowserClient = getSupabaseBrowserClient();
-      const { error } = await supabaseBrowserClient.storage.from('lesson-pdfs').uploadToSignedUrl(path, token, selectedFile);
+      const { error } = await supabaseBrowserClient.storage
+        .from('lesson-pdfs')
+        .uploadToSignedUrl(path, token, selectedFile, { upsert: true });
       if (error) throw new Error(error.message);
 
       setUploadStatus('success');

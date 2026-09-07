@@ -9,7 +9,9 @@ export function buildLessonPdfStoragePath(lessonId: string): string {
 
 export async function createLessonPdfUploadUrl(storagePath: string) {
   const supabaseAdminClient = getSupabaseAdminClient();
-  const { data, error } = await supabaseAdminClient.storage.from(LESSON_PDF_BUCKET).createSignedUploadUrl(storagePath);
+  const { data, error } = await supabaseAdminClient.storage
+    .from(LESSON_PDF_BUCKET)
+    .createSignedUploadUrl(storagePath, { upsert: true });
   if (error) throw new Error(`Failed to create PDF upload URL: ${error.message}`);
   return { signedUrl: data.signedUrl, token: data.token, path: data.path };
 }
