@@ -22,9 +22,6 @@ export function SiteHeader() {
     <header className="bg-navy-900 text-white">
       <div className="mx-auto hidden max-w-7xl items-center justify-between gap-3 px-4 py-2 text-xs sm:flex">
         <div className="flex items-center gap-4">
-          <Link href="/sign-in" className="hover:text-gold-400">
-            Login
-          </Link>
           <Link href="/contact" className="hover:text-gold-400">
             Contact Us
           </Link>
@@ -44,14 +41,20 @@ export function SiteHeader() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <Image src="/ussalogo.png" alt="USSA seal" width={80} height={80} className="h-16 w-16 sm:h-20 sm:w-20" />
+            <Image
+              src="/ussalogo.png"
+              alt="USSA seal"
+              width={80}
+              height={80}
+              className="h-16 w-16 sm:h-20 sm:w-20 lg:h-14 lg:w-14"
+            />
             <span>
-              <span className="block text-base font-extrabold leading-tight tracking-wide sm:text-xl">
+              <span className="block text-base font-extrabold leading-tight tracking-wide sm:text-xl lg:text-sm">
                 UNITED STATES
                 <br />
                 SECURITY ACADEMY
               </span>
-              <span className="block text-[10px] font-semibold tracking-[0.2em] text-gold-400 sm:text-xs">
+              <span className="block text-[10px] font-semibold tracking-[0.2em] text-gold-400 sm:text-xs lg:text-[9px] lg:tracking-[0.15em]">
                 TRAIN &middot; CERTIFY &middot; SERVE &middot; LEAD
               </span>
             </span>
@@ -74,15 +77,24 @@ export function SiteHeader() {
             </ul>
           </nav>
 
-          <button
-            type="button"
-            aria-label="Toggle navigation menu"
-            aria-expanded={isMobileMenuOpen}
-            onClick={() => setIsMobileMenuOpen((currentIsOpen) => !currentIsOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-md border border-white/20 lg:hidden"
-          >
-            <Icon name={isMobileMenuOpen ? 'close' : 'menu'} className="h-5 w-5" />
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/sign-in"
+              className="rounded-md bg-gold-500 px-3 py-2 text-xs font-bold tracking-wide text-navy-950 hover:bg-gold-400 sm:px-4 sm:text-sm"
+            >
+              LOGIN
+            </Link>
+
+            <button
+              type="button"
+              aria-label="Toggle navigation menu"
+              aria-expanded={isMobileMenuOpen}
+              onClick={() => setIsMobileMenuOpen((currentIsOpen) => !currentIsOpen)}
+              className="flex h-10 w-10 items-center justify-center rounded-md border border-white/20 lg:hidden"
+            >
+              <Icon name={isMobileMenuOpen ? 'close' : 'menu'} className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {isMobileMenuOpen && (
