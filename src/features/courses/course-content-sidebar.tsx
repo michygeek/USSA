@@ -6,6 +6,9 @@ import type { Module } from '@/db/schema/modules';
 
 interface CourseContentSidebarProps {
   courseSlug: string;
+  // Where this course lives — '/courses' for the public marketing catalog, '/dashboard/courses'
+  // for the signed-in app shell — so lesson links resolve under the right chrome.
+  basePath: string;
   modulesWithLessons: { moduleRecord: Module; moduleLessons: Lesson[] }[];
   completedLessonIds: Set<string>;
   hasFullAccess: boolean;
@@ -15,6 +18,7 @@ interface CourseContentSidebarProps {
 
 export function CourseContentSidebar({
   courseSlug,
+  basePath,
   modulesWithLessons,
   completedLessonIds,
   hasFullAccess,
@@ -66,7 +70,7 @@ export function CourseContentSidebar({
                   return (
                     <li key={lessonRecord.id}>
                       {canAccess ? (
-                        <Link href={`/courses/${courseSlug}/lessons/${lessonRecord.slug}`} className={rowClassName}>
+                        <Link href={`${basePath}/${courseSlug}/lessons/${lessonRecord.slug}`} className={rowClassName}>
                           {rowContent}
                         </Link>
                       ) : (

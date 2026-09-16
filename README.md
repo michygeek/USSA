@@ -16,6 +16,50 @@ enrollment. See the implementation plan for full scope and rationale.
 - Cloudflare Stream for video (signed URLs only, direct-from-browser uploads)
 - Stripe (USD and other non-NGN currencies) and Paystack (NGN) for payments
 
+## Project structure
+
+Code is organized by **feature**, not by technical layer — everything related
+to one concern (courses, lessons, enrollments, PDFs...) lives in one folder
+under `src/features/`, rather than being split across app-wide `controllers/`,
+`services/`, `models/` folders. Within a feature folder, a file's *name*
+tells you its role — no need to open it to know what it does:
+
+| Suffix / pattern | Role | Example |
+|---|---|---|
+| `*-queries.ts` | Read-only DB reads (Drizzle `select`) | `course-queries.ts` |
+| `*-actions.ts` | Server Actions — mutations (`'use server'`) | `course-actions.ts` |
+| `require-*.ts` | Auth/ownership guards that throw `ApiError` | `require-course-ownership.ts` |
+| `*-client.ts` | Thin wrapper over an external API/SDK | `cloudflare-stream-client.ts` |
+| `*-form.tsx` / `*-button.tsx` / `*-uploader.tsx` | Client components (`'use client'`) tied to one action | `add-lesson-form.tsx` |
+| `*-types.ts` | Feature-local TypeScript types | `course-types.ts` |
+
+Top-level layout:
+
+```
+src/
+├── app/                # Routes only — pages stay thin, delegate to features/
+├── features/<domain>/  # Business logic, one folder per concern (see table above)
+├── components/
+│   ├── ui/              # Generic, feature-agnostic primitives (Button, Card, Badge...)
+│   └── layout/          # Site-wide chrome (header, footer, page banner)
+├── db/
+│   ├── client.ts         # The one Drizzle instance — import this, never construct another
+│   └── schema/            # One file per table, re-exported from schema/index.ts
+├── supabase/             # The three Supabase client variants — pick by context:
+│   ├── server-client.ts    #   Server Components / Server Actions (cookie-based)
+│   ├── browser-client.ts   #   Client Components (anon key, browser-safe)
+│   └── admin-client.ts     #   Server-only, service-role key — bypasses RLS, never import client-side
+└── api-response/         # Shared ApiError class + SCREAMING_SNAKE_CASE error codes
+```
+
+A concrete example — everything about lesson PDFs lives in one place,
+`src/features/pdf/`, each file named for exactly what it does:
+`lesson-pdf-storage-client.ts` (signed Supabase Storage URLs) →
+`lesson-pdf-actions.ts` (the upload Server Action, ownership-checked) →
+`lesson-pdf-uploader.tsx` (the instructor's upload button) →
+`lesson-pdf-viewer.tsx` / `lesson-pdf-viewer-lazy.tsx` (the learner-facing
+canvas renderer and its client-only lazy wrapper).
+
 ## Local setup
 
 1. Install dependencies:

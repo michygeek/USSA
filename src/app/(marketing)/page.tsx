@@ -1,9 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { StatsSection } from '@/features/marketing/stats-section';
 import { TestimonialsSection } from '@/features/marketing/testimonials-section';
 import { CtaBannerSection } from '@/features/marketing/cta-banner-section';
+import { getAuthenticatedUserFromSession } from '@/features/auth/get-authenticated-user';
+import { getDashboardHref } from '@/features/auth/get-dashboard-href';
 
 const TRAINING_MODES: { icon: IconName; title: string; description: string }[] = [
   { icon: 'monitor', title: 'Web-Based Training', description: 'Learn Online Anytime, Anywhere' },
@@ -62,7 +65,10 @@ const COMPLIANCE_HIGHLIGHTS: { icon: IconName; title: string; description: strin
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const authenticatedUser = await getAuthenticatedUserFromSession();
+  if (authenticatedUser) redirect(getDashboardHref(authenticatedUser.role));
+
   return (
     <>
       <section className="relative isolate flex min-h-[560px] items-center overflow-hidden bg-navy-950 text-white sm:min-h-[640px] lg:min-h-[760px]">

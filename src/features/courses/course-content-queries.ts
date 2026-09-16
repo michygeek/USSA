@@ -1,4 +1,4 @@
-import { listModulesByCourse } from './module-queries';
+import { listModulesByCourse } from '@/features/modules/module-queries';
 import { listLessonsByModule } from '@/features/lessons/lesson-queries';
 
 export async function getCourseContentTree(courseId: string) {

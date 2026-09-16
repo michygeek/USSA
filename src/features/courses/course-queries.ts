@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, ilike } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { courses } from '@/db/schema';
 
@@ -12,8 +12,10 @@ export async function getCourseById(courseId: string) {
   return courseRecord ?? null;
 }
 
-export async function listPublishedCourses() {
-  return db.select().from(courses).where(eq(courses.status, 'published'));
+export async function listPublishedCourses(searchQuery?: string) {
+  const conditions = [eq(courses.status, 'published')];
+  if (searchQuery) conditions.push(ilike(courses.title, `%${searchQuery}%`));
+  return db.select().from(courses).where(and(...conditions));
 }
 
 export async function listCoursesByOwner(ownerId: string) {

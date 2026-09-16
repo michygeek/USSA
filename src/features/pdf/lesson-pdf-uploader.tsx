@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '@/supabase/browser-client';
-import { createLessonPdfUploadTarget } from './pdf-actions';
+import { createLessonPdfUploadTarget } from './lesson-pdf-actions';
 import { Spinner } from '@/components/ui/spinner';
 
 type UploadStatus = 'idle' | 'requestingUploadUrl' | 'uploading' | 'success' | 'error';

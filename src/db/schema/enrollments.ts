@@ -17,3 +17,5 @@ export const enrollments = pgTable(
     userIdCourseIdUnique: uniqueIndex('enrollments_user_id_course_id_unique').on(table.userId, table.courseId),
   }),
 );
+
+export type Enrollment = typeof enrollments.$inferSelect;

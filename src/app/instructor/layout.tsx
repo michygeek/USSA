@@ -14,7 +14,15 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
               <p className="text-[10px] font-semibold uppercase tracking-wide text-gold-600">Instructor Portal</p>
             </div>
           </Link>
-          <SignOutButton />
+          <div className="flex items-center gap-6">
+            <Link href="/instructor/courses" className="text-xs font-semibold uppercase tracking-wide text-slate-600 hover:text-navy-900">
+              Courses
+            </Link>
+            <Link href="/instructor/analytics" className="text-xs font-semibold uppercase tracking-wide text-slate-600 hover:text-navy-900">
+              Analytics
+            </Link>
+            <SignOutButton />
+          </div>
         </div>
       </header>
       {children}

@@ -4,18 +4,44 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/icon';
+import { SignOutButton } from '@/features/auth/sign-out-button';
+import { getDashboardHref } from '@/features/auth/get-dashboard-href';
+import type { AuthenticatedUser } from '@/features/auth/auth-types';
 
-const NAV_LINKS = [
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+interface NavGroup {
+  label: string;
+  href: string;
+  children: NavLink[];
+}
+
+type NavItem = NavLink | NavGroup;
+
+function isNavGroup(navItem: NavItem): navItem is NavGroup {
+  return 'children' in navItem;
+}
+
+const NAV_LINKS: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'About Us', href: '/about' },
-  { label: 'Courses & Programs', href: '/courses' },
-  { label: 'Certifications', href: '/certifications' },
-  { label: 'Training Modes', href: '/training-modes' },
+  {
+    label: 'Programs',
+    href: '/courses',
+    children: [
+      { label: 'Courses & Programs', href: '/courses' },
+      { label: 'Certifications', href: '/certifications' },
+      { label: 'Training Modes', href: '/training-modes' },
+    ],
+  },
   { label: 'Resources', href: '/resources' },
   { label: 'Contact Us', href: '/contact' },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ authenticatedUser }: { authenticatedUser: AuthenticatedUser | null }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -61,29 +87,57 @@ export function SiteHeader() {
           </Link>
 
           <nav className="hidden flex-1 justify-end lg:flex">
-            <ul className="flex items-center gap-6 text-xs font-semibold tracking-wide">
-              {NAV_LINKS.map((navLink) => (
-                <li key={navLink.href}>
-                  <Link href={navLink.href} className="hover:text-gold-400">
-                    {navLink.label.toUpperCase()}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link href="/courses" className="text-gold-400 hover:text-gold-500">
-                  ENROLL NOW
-                </Link>
-              </li>
+            <ul className="flex items-center gap-5 text-xs font-semibold tracking-wide">
+              {NAV_LINKS.map((navItem) =>
+                isNavGroup(navItem) ? (
+                  <li key={navItem.label} className="group relative">
+                    <Link href={navItem.href} className="flex items-center gap-1 py-2 hover:text-gold-400">
+                      {navItem.label.toUpperCase()}
+                      <Icon name="chevronDown" className="h-3 w-3" />
+                    </Link>
+                    <ul
+                      className="invisible absolute left-0 top-full z-10 w-56 rounded-md border border-white/10 bg-navy-900 py-2 opacity-0
+                        shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+                    >
+                      {navItem.children.map((childLink) => (
+                        <li key={childLink.href}>
+                          <Link href={childLink.href} className="block px-4 py-2 hover:bg-white/5 hover:text-gold-400">
+                            {childLink.label.toUpperCase()}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ) : (
+                  <li key={navItem.href}>
+                    <Link href={navItem.href} className="hover:text-gold-400">
+                      {navItem.label.toUpperCase()}
+                    </Link>
+                  </li>
+                ),
+              )}
             </ul>
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <Link
-              href="/sign-in"
-              className="rounded-md bg-gold-500 px-3 py-2 text-xs font-bold tracking-wide text-navy-950 hover:bg-gold-400 sm:px-4 sm:text-sm"
-            >
-              LOGIN
-            </Link>
+          <div className="flex shrink-0 items-center gap-3">
+            {authenticatedUser ? (
+              <div className="hidden items-center gap-4 lg:flex">
+                <SignOutButton className="text-xs font-semibold tracking-wide text-white hover:text-gold-400" />
+                <Link
+                  href={getDashboardHref(authenticatedUser.role)}
+                  className="rounded-md bg-gold-500 px-4 py-2 text-sm font-bold tracking-wide text-navy-950 hover:bg-gold-400"
+                >
+                  MY DASHBOARD
+                </Link>
+              </div>
+            ) : (
+              <Link
+                href="/sign-in"
+                className="hidden rounded-md bg-gold-500 px-3 py-2 text-xs font-bold tracking-wide text-navy-950 hover:bg-gold-400 lg:inline-flex lg:px-4 lg:text-sm"
+              >
+                STUDENT LOGIN
+              </Link>
+            )}
 
             <button
               type="button"
@@ -100,26 +154,68 @@ export function SiteHeader() {
         {isMobileMenuOpen && (
           <nav className="border-t border-white/10 lg:hidden">
             <ul className="mx-auto flex max-w-7xl flex-col px-4 py-3 text-sm font-semibold tracking-wide">
-              {NAV_LINKS.map((navLink) => (
-                <li key={navLink.href}>
+              {NAV_LINKS.filter((navItem) => navItem.label !== 'Contact Us').map((navItem) =>
+                isNavGroup(navItem) ? (
+                  <li key={navItem.label}>
+                    <Link
+                      href={navItem.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block py-2 hover:text-gold-400"
+                    >
+                      {navItem.label.toUpperCase()}
+                    </Link>
+                    <ul className="flex flex-col border-l border-white/10 pl-4">
+                      {navItem.children.map((childLink) => (
+                        <li key={childLink.href}>
+                          <Link
+                            href={childLink.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="block py-2 text-xs text-slate-300 hover:text-gold-400"
+                          >
+                            {childLink.label.toUpperCase()}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ) : (
+                  <li key={navItem.href}>
+                    <Link
+                      href={navItem.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block py-2 hover:text-gold-400"
+                    >
+                      {navItem.label.toUpperCase()}
+                    </Link>
+                  </li>
+                ),
+              )}
+              {authenticatedUser ? (
+                <>
+                  <li className="mt-2">
+                    <Link
+                      href={getDashboardHref(authenticatedUser.role)}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block rounded-md bg-gold-500 px-4 py-2.5 text-center text-sm font-bold tracking-wide text-navy-950 hover:bg-gold-400"
+                    >
+                      MY DASHBOARD
+                    </Link>
+                  </li>
+                  <li className="mt-1 text-center">
+                    <SignOutButton className="py-2 text-sm font-semibold text-slate-300 hover:text-gold-400" />
+                  </li>
+                </>
+              ) : (
+                <li className="mt-2">
                   <Link
-                    href={navLink.href}
+                    href="/sign-in"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2 hover:text-gold-400"
+                    className="block rounded-md bg-gold-500 px-4 py-2.5 text-center text-sm font-bold tracking-wide text-navy-950 hover:bg-gold-400"
                   >
-                    {navLink.label.toUpperCase()}
+                    STUDENT LOGIN
                   </Link>
                 </li>
-              ))}
-              <li>
-                <Link
-                  href="/courses"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-2 text-gold-400 hover:text-gold-500"
-                >
-                  ENROLL NOW
-                </Link>
-              </li>
+              )}
             </ul>
           </nav>
         )}

@@ -28,7 +28,7 @@ export default function SignInPage() {
       setErrorMessage(error.message);
       return;
     }
-    router.push('/instructor/courses');
+    router.push('/post-sign-in');
     router.refresh();
   }
 
@@ -116,7 +116,13 @@ export default function SignInPage() {
             </Button>
           </form>
 
-          <p className="mt-8 text-center text-xs text-slate-400">
+          <p className="mt-6 text-center text-xs text-slate-400">
+            Don&apos;t have an account?{' '}
+            <Link href="/sign-up" className="font-semibold text-navy-800 hover:text-gold-600">
+              Sign up
+            </Link>
+          </p>
+          <p className="mt-2 text-center text-xs text-slate-400">
             <Link href="/" className="font-semibold text-navy-800 hover:text-gold-600">
               &larr; Back to home
             </Link>

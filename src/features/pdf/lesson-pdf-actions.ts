@@ -9,7 +9,7 @@ import { requireAuthenticatedUserFromSession } from '@/features/auth/require-aut
 import { requireCourseOwnership } from '@/features/courses/require-course-ownership';
 import { getLessonById } from '@/features/lessons/lesson-queries';
 import { getModuleById } from '@/features/modules/module-queries';
-import { buildLessonPdfStoragePath, createLessonPdfUploadUrl } from './pdf-storage-client';
+import { buildLessonPdfStoragePath, createLessonPdfUploadUrl } from './lesson-pdf-storage-client';
 
 export async function createLessonPdfUploadTarget(lessonId: string) {
   const authenticatedUser = await requireAuthenticatedUserFromSession();

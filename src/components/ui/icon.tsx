@@ -28,6 +28,8 @@ export const ICON_NAME = {
   checkCircle: 'checkCircle',
   lock: 'lock',
   play: 'play',
+  search: 'search',
+  logOut: 'logOut',
 } as const;
 
 export type IconName = (typeof ICON_NAME)[keyof typeof ICON_NAME];
@@ -60,6 +62,8 @@ const ICON_PATHS: Record<IconName, string> = {
   checkCircle: 'M12 12m-9 0a9 9 0 1018 0 9 9 0 10-18 0M9 12l2 2 4-4',
   lock: 'M7 10V7a5 5 0 0110 0v3M5 10h14v10H5zM12 15v2',
   play: 'M8 5l12 7-12 7z',
+  search: 'M19 11a8 8 0 11-16 0 8 8 0 0116 0zM17 17l5 5',
+  logOut: 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9',
 };
 
 export function Icon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {

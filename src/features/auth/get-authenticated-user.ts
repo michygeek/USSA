@@ -24,13 +24,26 @@ async function extractCookieAccessToken(): Promise<string | null> {
   return session?.access_token ?? null;
 }
 
-async function verifySupabaseAccessToken(supabaseAccessToken: string): Promise<string | null> {
+interface SupabaseTokenClaims {
+  userId: string;
+  email?: string;
+  displayName?: string;
+}
+
+async function verifySupabaseAccessToken(supabaseAccessToken: string): Promise<SupabaseTokenClaims | null> {
   try {
     const { payload } = await jwtVerify(supabaseAccessToken, supabaseJwks, {
       issuer: supabaseAuthIssuer,
       audience: 'authenticated',
     });
-    return typeof payload.sub === 'string' ? payload.sub : null;
+    if (typeof payload.sub !== 'string') return null;
+
+    const userMetadata = payload.user_metadata as { full_name?: string; name?: string } | undefined;
+    return {
+      userId: payload.sub,
+      email: typeof payload.email === 'string' ? payload.email : undefined,
+      displayName: userMetadata?.full_name || userMetadata?.name,
+    };
   } catch {
     return null;
   }
@@ -41,13 +54,31 @@ async function getUserRecordById(userId: string) {
   return userRecord ?? null;
 }
 
+// Instructor/admin accounts are always created deliberately (seed script, future admin invite
+// flow) — this only ever provisions the 'learner' role, for people who self-registered via
+// Supabase Auth directly (e.g. the sign-up form) and have no row in our own `users` table yet.
+async function provisionLearnerRecord(claims: SupabaseTokenClaims) {
+  const email = claims.email ?? `${claims.userId}@unknown.local`;
+  const displayName = claims.displayName || email.split('@')[0] || email;
+
+  const [createdUser] = await db
+    .insert(users)
+    .values({ id: claims.userId, email, displayName, role: 'learner' })
+    .onConflictDoNothing({ target: users.id })
+    .returning();
+
+  // onConflictDoNothing returns nothing on a race (another request provisioned it first) —
+  // the row exists either way, so just re-read it.
+  return createdUser ?? getUserRecordById(claims.userId);
+}
+
 async function resolveAuthenticatedUser(supabaseAccessToken: string | null): Promise<AuthenticatedUser | null> {
   if (!supabaseAccessToken) return null;
 
-  const supabaseUserId = await verifySupabaseAccessToken(supabaseAccessToken);
-  if (!supabaseUserId) return null;
+  const claims = await verifySupabaseAccessToken(supabaseAccessToken);
+  if (!claims) return null;
 
-  const userRecord = await getUserRecordById(supabaseUserId);
+  const userRecord = (await getUserRecordById(claims.userId)) ?? (await provisionLearnerRecord(claims));
   if (!userRecord) return null;
 
   return {

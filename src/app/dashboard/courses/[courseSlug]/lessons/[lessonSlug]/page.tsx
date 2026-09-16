@@ -1,6 +1,6 @@
 import { LessonDetailContent } from '@/features/lessons/lesson-detail-content';
 
-export default async function LessonPage({
+export default async function DashboardLessonPage({
   params,
 }: {
   params: Promise<{ courseSlug: string; lessonSlug: string }>;
@@ -8,8 +8,8 @@ export default async function LessonPage({
   const { courseSlug, lessonSlug } = await params;
 
   return (
-    <section className="bg-slate-50 py-10">
-      <LessonDetailContent courseSlug={courseSlug} lessonSlug={lessonSlug} basePath="/courses" />
-    </section>
+    <main className="py-8">
+      <LessonDetailContent courseSlug={courseSlug} lessonSlug={lessonSlug} basePath="/dashboard/courses" />
+    </main>
   );
 }
