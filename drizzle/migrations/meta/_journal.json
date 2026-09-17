@@ -22,6 +22,13 @@
       "when": 1788736890578,
       "tag": "0002_awesome_preak",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789617946916,
+      "tag": "0003_huge_black_widow",
+      "breakpoints": true
     }
   ]
 }
