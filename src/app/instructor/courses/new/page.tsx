@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createCourse } from '@/features/courses/course-actions';
 import { createCourseThumbnailUploadTarget } from '@/features/courses/course-thumbnail-actions';
+import { COURSE_CATEGORIES, COURSE_CATEGORY_META } from '@/features/courses/course-category';
+import type { CourseCategory } from '@/features/courses/course-types';
 import { getSupabaseBrowserClient } from '@/supabase/browser-client';
 import { slugify } from '@/slugify';
 import { Button } from '@/components/ui/button';
@@ -22,6 +24,7 @@ export default function NewCoursePage() {
   const [slug, setSlug] = useState('');
   const [hasEditedSlugManually, setHasEditedSlugManually] = useState(false);
   const [summary, setSummary] = useState('');
+  const [category, setCategory] = useState<CourseCategory>('security');
   const [priceInput, setPriceInput] = useState('0');
   const [currency, setCurrency] = useState('USD');
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -54,7 +57,7 @@ export default function NewCoursePage() {
 
     try {
       const priceAmountMinor = Math.round((Number.parseFloat(priceInput) || 0) * 100);
-      const createdCourse = await createCourse({ title, slug, summary, priceAmountMinor, currency });
+      const createdCourse = await createCourse({ title, slug, summary, category, priceAmountMinor, currency });
 
       if (thumbnailFile) {
         setStatusText('Uploading thumbnail...');
@@ -104,6 +107,22 @@ export default function NewCoursePage() {
               value={summary}
               onChange={(changeEvent) => setSummary(changeEvent.target.value)}
             />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-600">Category</label>
+            <select
+              value={category}
+              onChange={(changeEvent) => setCategory(changeEvent.target.value as CourseCategory)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              required
+            >
+              {COURSE_CATEGORIES.map((categoryOption) => (
+                <option key={categoryOption} value={categoryOption}>
+                  {COURSE_CATEGORY_META[categoryOption].label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="grid grid-cols-[2fr_1fr] gap-3">

@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { eq } from 'drizzle-orm';
 import WebSocket from 'ws';
 import { db } from '../src/db/client';
-import { users, courses, modules, lessons } from '../src/db/schema';
+import { users, courses, modules, lessons, type courseCategoryEnum } from '../src/db/schema';
 import { env } from '../env';
 
 const SEED_PASSWORD = 'ChangeMe123!';
@@ -47,6 +47,7 @@ async function upsertCourse(input: {
   slug: string;
   title: string;
   summary: string;
+  category: (typeof courseCategoryEnum.enumValues)[number];
   priceAmountMinor: number;
   currency: string;
 }) {
@@ -98,6 +99,7 @@ async function main() {
     slug: 'intro-to-corrections-safety',
     title: 'Intro to Corrections Safety',
     summary: 'A free introduction to core corrections safety practices.',
+    category: 'corrections',
     priceAmountMinor: 0,
     currency: 'USD',
   });
@@ -114,6 +116,7 @@ async function main() {
     slug: 'law-enforcement-use-of-force',
     title: 'Law Enforcement Use of Force',
     summary: 'Use-of-force fundamentals for law enforcement officers.',
+    category: 'lawEnforcement',
     priceAmountMinor: 500000,
     currency: 'NGN',
   });
@@ -124,6 +127,7 @@ async function main() {
     slug: 'security-officer-certification',
     title: 'Security Officer Certification',
     summary: 'Certification training for security officers.',
+    category: 'security',
     priceAmountMinor: 9900,
     currency: 'USD',
   });

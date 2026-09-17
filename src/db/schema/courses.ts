@@ -3,6 +3,16 @@ import { users } from './users';
 
 export const courseStatusEnum = pgEnum('course_status', ['draft', 'published', 'archived']);
 
+// Mirrors the five training programs advertised on the homepage, so a course's category can
+// reuse the same icon set and copy instead of introducing a second taxonomy.
+export const courseCategoryEnum = pgEnum('course_category', [
+  'military',
+  'lawEnforcement',
+  'corrections',
+  'security',
+  'safety',
+]);
+
 export const courses = pgTable(
   'courses',
   {
@@ -12,6 +22,7 @@ export const courses = pgTable(
     title: text('title').notNull(),
     summary: text('summary'),
     thumbnailUrl: text('thumbnail_url'),
+    category: courseCategoryEnum('category').notNull(),
     priceAmountMinor: integer('price_amount_minor').notNull().default(0),
     currency: text('currency').notNull(),
     status: courseStatusEnum('status').notNull().default('draft'),

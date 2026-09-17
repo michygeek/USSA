@@ -11,8 +11,8 @@ import { requireCourseOwnership } from './require-course-ownership';
 import { slugify } from '@/slugify';
 import type { NewCourse } from './course-types';
 
-type CreateCourseInput = Pick<NewCourse, 'slug' | 'title' | 'summary' | 'priceAmountMinor' | 'currency'>;
-type UpdateCourseInput = Partial<Pick<NewCourse, 'title' | 'summary' | 'priceAmountMinor' | 'currency'>>;
+type CreateCourseInput = Pick<NewCourse, 'slug' | 'title' | 'summary' | 'category' | 'priceAmountMinor' | 'currency'>;
+type UpdateCourseInput = Partial<Pick<NewCourse, 'title' | 'summary' | 'category' | 'priceAmountMinor' | 'currency'>>;
 
 export async function createCourse(input: CreateCourseInput) {
   const authenticatedUser = await requireAuthenticatedUserFromSession();
