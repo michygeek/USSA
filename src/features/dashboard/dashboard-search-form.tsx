@@ -4,7 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Icon } from '@/components/ui/icon';
 
-export function DashboardSearchForm({ targetPath = '/dashboard/courses' }: { targetPath?: string }) {
+export function DashboardSearchForm({
+  targetPath = '/dashboard/courses',
+  placeholder = 'Search courses...',
+}: {
+  targetPath?: string;
+  placeholder?: string;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState('');
 
@@ -20,7 +26,7 @@ export function DashboardSearchForm({ targetPath = '/dashboard/courses' }: { tar
         type="search"
         value={query}
         onChange={(changeEvent) => setQuery(changeEvent.target.value)}
-        placeholder="Search courses..."
+        placeholder={placeholder}
         className="w-full rounded-full border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-4 text-sm text-slate-700 focus:border-navy-800 focus:outline-none"
       />
     </form>

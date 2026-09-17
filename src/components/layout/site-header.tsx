@@ -131,12 +131,20 @@ export function SiteHeader({ authenticatedUser }: { authenticatedUser: Authentic
                 </Link>
               </div>
             ) : (
-              <Link
-                href="/sign-in"
-                className="hidden rounded-md bg-gold-500 px-3 py-2 text-xs font-bold tracking-wide text-navy-950 hover:bg-gold-400 lg:inline-flex lg:px-4 lg:text-sm"
-              >
-                STUDENT LOGIN
-              </Link>
+              <div className="hidden items-center gap-3 lg:flex">
+                <Link
+                  href="/sign-in"
+                  className="rounded-md border border-white/30 px-4 py-2 text-sm font-bold tracking-wide text-white hover:border-gold-400 hover:text-gold-400"
+                >
+                  LOG IN
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="rounded-md bg-gold-500 px-4 py-2 text-sm font-bold tracking-wide text-navy-950 hover:bg-gold-400"
+                >
+                  SIGN UP
+                </Link>
+              </div>
             )}
 
             <button
@@ -206,13 +214,20 @@ export function SiteHeader({ authenticatedUser }: { authenticatedUser: Authentic
                   </li>
                 </>
               ) : (
-                <li className="mt-2">
+                <li className="mt-2 flex flex-col gap-2">
                   <Link
                     href="/sign-in"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    className="block rounded-md border border-white/30 px-4 py-2.5 text-center text-sm font-bold tracking-wide text-white hover:border-gold-400 hover:text-gold-400"
+                  >
+                    LOG IN
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="block rounded-md bg-gold-500 px-4 py-2.5 text-center text-sm font-bold tracking-wide text-navy-950 hover:bg-gold-400"
                   >
-                    STUDENT LOGIN
+                    SIGN UP
                   </Link>
                 </li>
               )}

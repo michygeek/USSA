@@ -5,6 +5,7 @@ import { Icon, type IconName } from '@/components/ui/icon';
 import { StatsSection } from '@/features/marketing/stats-section';
 import { TestimonialsSection } from '@/features/marketing/testimonials-section';
 import { CtaBannerSection } from '@/features/marketing/cta-banner-section';
+import { FaqSection } from '@/features/marketing/faq-section';
 import { getAuthenticatedUserFromSession } from '@/features/auth/get-authenticated-user';
 import { getDashboardHref } from '@/features/auth/get-dashboard-href';
 
@@ -187,6 +188,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <FaqSection />
     </>
   );
 }
