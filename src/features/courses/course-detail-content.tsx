@@ -108,7 +108,7 @@ export async function CourseDetailContent({ courseSlug, basePath }: CourseDetail
                     href={`${basePath}/${courseRecord.slug}/assessment`}
                     className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-gold-500 px-4 py-2 text-sm font-medium text-navy-950 hover:bg-gold-400"
                   >
-                    Take final assessment
+                    Take Exam
                   </Link>
                 )}
               </div>

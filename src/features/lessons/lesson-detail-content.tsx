@@ -8,6 +8,7 @@ import { requireLessonAccess } from '@/features/lessons/require-lesson-access';
 import { isUserEnrolledInCourse } from '@/features/enrollments/enrollment-queries';
 import { getCourseModuleProgress, getCompletedLessonIds } from '@/features/progress/course-progress-queries';
 import { createLessonPdfViewUrl } from '@/features/pdf/lesson-pdf-storage-client';
+import { getAssessmentByCourseId } from '@/features/assessments/assessment-queries';
 import { ApiError } from '@/api-response/api-error';
 import { PdfViewer } from '@/features/pdf/lesson-pdf-viewer-lazy';
 import { MarkDoneButton } from '@/features/progress/mark-done-button';
@@ -47,6 +48,8 @@ export async function LessonDetailContent({ courseSlug, lessonSlug, basePath }: 
     getCompletedLessonIds(authenticatedUser.userId, courseRecord.id),
   ]);
   const isCompleted = completedLessonIds.has(lessonRecord.id);
+  const isCourseComplete = hasFullAccess && progress.completedAt !== null;
+  const assessment = isCourseComplete ? await getAssessmentByCourseId(courseRecord.id) : null;
 
   const pdfViewUrl =
     lessonRecord.contentType === 'pdf' && lessonRecord.pdfStoragePath ? await createLessonPdfViewUrl(lessonRecord.pdfStoragePath) : null;
@@ -73,6 +76,18 @@ export async function LessonDetailContent({ courseSlug, lessonSlug, basePath }: 
             <h1 className="text-2xl font-bold text-slate-900">{lessonRecord.title}</h1>
             <MarkDoneButton lessonId={lessonRecord.id} isCompleted={isCompleted} />
           </div>
+
+          {isCourseComplete && assessment && (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-gold-500/10 px-4 py-3">
+              <p className="text-sm font-semibold text-navy-900">You&apos;ve completed every lesson in this course.</p>
+              <Link
+                href={`${basePath}/${courseRecord.slug}/assessment`}
+                className="inline-flex items-center gap-1 rounded-md bg-gold-500 px-4 py-2 text-sm font-bold text-navy-950 hover:bg-gold-400"
+              >
+                Take Exam <span aria-hidden>&rarr;</span>
+              </Link>
+            </div>
+          )}
 
           <div className="mt-6">
             {lessonRecord.contentType === 'pdf' ? (
