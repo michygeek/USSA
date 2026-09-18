@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getAuthenticatedUserFromSession } from '@/features/auth/get-authenticated-user';
 import { getCourseBySlug } from '@/features/courses/course-queries';
 import { getCourseModuleProgress } from '@/features/progress/course-progress-queries';
+import { hasPassedRequiredAssessment } from '@/features/assessments/assessment-queries';
 import { PrintCertificateButton } from '@/features/dashboard/print-certificate-button';
 
 export default async function CertificatePage({ params }: { params: Promise<{ courseSlug: string }> }) {
@@ -15,6 +16,9 @@ export default async function CertificatePage({ params }: { params: Promise<{ co
 
   const progress = await getCourseModuleProgress(authenticatedUser.userId, courseRecord.id);
   if (!progress.completedAt) redirect('/dashboard');
+
+  const hasPassed = await hasPassedRequiredAssessment(authenticatedUser.userId, courseRecord.id);
+  if (!hasPassed) redirect(`/dashboard/courses/${courseRecord.slug}/assessment`);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">

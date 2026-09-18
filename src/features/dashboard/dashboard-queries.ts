@@ -6,6 +6,7 @@ import {
   listCompletedLessonsForUser,
   type CourseProgress,
 } from '@/features/progress/course-progress-queries';
+import { hasPassedRequiredAssessment } from '@/features/assessments/assessment-queries';
 import type { Course } from '@/features/courses/course-types';
 
 export interface EnrolledCourseSummary {
@@ -15,6 +16,10 @@ export interface EnrolledCourseSummary {
   // The next lesson the learner hasn't completed yet, to power a "Continue" deep link.
   // Null only when the course has no lessons at all.
   nextLessonSlug: string | null;
+  // True when the course has no published assessment, or the learner has a passing attempt on
+  // it — a course finishing all its lessons isn't enough to certify if it also has an
+  // assessment the learner hasn't passed yet.
+  hasPassedRequiredAssessment: boolean;
 }
 
 export async function listEnrolledCoursesWithProgress(userId: string): Promise<EnrolledCourseSummary[]> {
@@ -22,10 +27,11 @@ export async function listEnrolledCoursesWithProgress(userId: string): Promise<E
 
   return Promise.all(
     enrollmentRows.map(async ({ enrollment, course }) => {
-      const [progress, completedLessonIds, contentTree] = await Promise.all([
+      const [progress, completedLessonIds, contentTree, hasPassedAssessment] = await Promise.all([
         getCourseModuleProgress(userId, course.id),
         getCompletedLessonIds(userId, course.id),
         getCourseContentTree(course.id),
+        hasPassedRequiredAssessment(userId, course.id),
       ]);
 
       const allLessonsInOrder = contentTree.flatMap(({ moduleLessons }) => moduleLessons);
@@ -36,6 +42,7 @@ export async function listEnrolledCoursesWithProgress(userId: string): Promise<E
         progress,
         enrolledAt: enrollment.enrolledAt,
         nextLessonSlug: nextLesson?.slug ?? null,
+        hasPassedRequiredAssessment: hasPassedAssessment,
       };
     }),
   );
@@ -50,7 +57,10 @@ export interface EarnedCertificate {
 // re-querying, since a course's certificate eligibility is just "100% complete".
 export function selectEarnedCertificates(enrolledCourses: EnrolledCourseSummary[]): EarnedCertificate[] {
   return enrolledCourses
-    .filter((entry): entry is EnrolledCourseSummary & { progress: { completedAt: Date } } => entry.progress.completedAt !== null)
+    .filter(
+      (entry): entry is EnrolledCourseSummary & { progress: { completedAt: Date } } =>
+        entry.progress.completedAt !== null && entry.hasPassedRequiredAssessment,
+    )
     .map((entry) => ({ course: entry.course, completedAt: entry.progress.completedAt }))
     .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
 }

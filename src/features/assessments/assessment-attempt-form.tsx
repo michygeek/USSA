@@ -27,6 +27,7 @@ export function AssessmentAttemptForm({ courseId, assessment }: { courseId: stri
       router.refresh();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Failed to submit assessment.');
+    } finally {
       setIsSubmitting(false);
     }
   }

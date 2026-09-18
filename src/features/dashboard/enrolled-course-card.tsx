@@ -3,11 +3,15 @@ import { Icon } from '@/components/ui/icon';
 import { RadialProgress } from '@/components/ui/radial-progress';
 import type { EnrolledCourseSummary } from './dashboard-queries';
 
-export function EnrolledCourseCard({ course, progress, nextLessonSlug }: EnrolledCourseSummary) {
+export function EnrolledCourseCard({ course, progress, nextLessonSlug, hasPassedRequiredAssessment }: EnrolledCourseSummary) {
   const isCompleted = progress.completedAt !== null;
-  const continueHref = nextLessonSlug
-    ? `/dashboard/courses/${course.slug}/lessons/${nextLessonSlug}`
-    : `/dashboard/courses/${course.slug}`;
+  const isCertified = isCompleted && hasPassedRequiredAssessment;
+  const needsAssessment = isCompleted && !hasPassedRequiredAssessment;
+  const continueHref = needsAssessment
+    ? `/dashboard/courses/${course.slug}/assessment`
+    : nextLessonSlug
+      ? `/dashboard/courses/${course.slug}/lessons/${nextLessonSlug}`
+      : `/dashboard/courses/${course.slug}`;
   const percentage = progress.totalLessons === 0 ? 0 : Math.round((progress.completedLessons / progress.totalLessons) * 100);
 
   return (
@@ -42,10 +46,16 @@ export function EnrolledCourseCard({ course, progress, nextLessonSlug }: Enrolle
 
         <p
           className={`mt-3 rounded-full px-3 py-1.5 text-center text-xs font-semibold ${
-            isCompleted ? 'bg-gold-500/10 text-gold-600' : 'bg-slate-100 text-slate-600'
+            isCertified ? 'bg-gold-500/10 text-gold-600' : needsAssessment ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'
           }`}
         >
-          {isCompleted ? 'Certificate earned' : progress.completedLessons > 0 ? 'Continue learning' : 'Start course'}
+          {isCertified
+            ? 'Certificate earned'
+            : needsAssessment
+              ? 'Take final assessment'
+              : progress.completedLessons > 0
+                ? 'Continue learning'
+                : 'Start course'}
         </p>
       </div>
     </Link>

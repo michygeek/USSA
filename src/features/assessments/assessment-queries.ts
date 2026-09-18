@@ -54,6 +54,28 @@ export async function listAttemptsForUser(assessmentId: string, userId: string):
     .orderBy(desc(assessmentAttempts.submittedAt));
 }
 
+// A course only requires passing its assessment if one has actually been published (has at
+// least one question) — an empty assessment shell an instructor is still building shouldn't
+// block certificates for a course that otherwise has none configured yet.
+export async function hasPassedRequiredAssessment(userId: string, courseId: string): Promise<boolean> {
+  const assessment = await getAssessmentByCourseId(courseId);
+  if (!assessment) return true;
+
+  const [firstQuestion] = await db
+    .select({ id: assessmentQuestions.id })
+    .from(assessmentQuestions)
+    .where(eq(assessmentQuestions.assessmentId, assessment.id))
+    .limit(1);
+  if (!firstQuestion) return true;
+
+  const [passingAttempt] = await db
+    .select({ id: assessmentAttempts.id })
+    .from(assessmentAttempts)
+    .where(and(eq(assessmentAttempts.assessmentId, assessment.id), eq(assessmentAttempts.userId, userId), eq(assessmentAttempts.passed, true)))
+    .limit(1);
+  return !!passingAttempt;
+}
+
 export async function getCourseIdByAssessmentId(assessmentId: string): Promise<string | null> {
   const [row] = await db.select({ courseId: courseAssessments.courseId }).from(courseAssessments).where(eq(courseAssessments.id, assessmentId));
   return row?.courseId ?? null;
