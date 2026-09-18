@@ -8,7 +8,9 @@ export const enrollments = pgTable(
   'enrollments',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').notNull().references(() => users.id),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     courseId: uuid('course_id').notNull().references(() => courses.id, { onDelete: 'cascade' }),
     status: enrollmentStatusEnum('status').notNull().default('active'),
     enrolledAt: timestamp('enrolled_at', { withTimezone: true }).notNull().defaultNow(),

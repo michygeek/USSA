@@ -9,7 +9,9 @@ export const payments = pgTable(
   'payments',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').notNull().references(() => users.id),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     courseId: uuid('course_id').notNull().references(() => courses.id, { onDelete: 'cascade' }),
     provider: paymentProviderEnum('provider').notNull(),
     providerReference: text('provider_reference').notNull(),

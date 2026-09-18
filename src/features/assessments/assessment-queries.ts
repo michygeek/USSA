@@ -76,6 +76,11 @@ export async function hasPassedRequiredAssessment(userId: string, courseId: stri
   return !!passingAttempt;
 }
 
+export async function getAttemptById(attemptId: string) {
+  const [attempt] = await db.select().from(assessmentAttempts).where(eq(assessmentAttempts.id, attemptId));
+  return attempt ?? null;
+}
+
 export async function getCourseIdByAssessmentId(assessmentId: string): Promise<string | null> {
   const [row] = await db.select({ courseId: courseAssessments.courseId }).from(courseAssessments).where(eq(courseAssessments.id, assessmentId));
   return row?.courseId ?? null;

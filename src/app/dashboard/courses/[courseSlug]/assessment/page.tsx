@@ -58,9 +58,10 @@ export default async function DashboardCourseAssessmentPage({ params }: { params
               <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Your attempts</h2>
               <div className="mt-2 flex flex-col gap-2">
                 {pastAttempts.map((attempt) => (
-                  <div
+                  <Link
                     key={attempt.id}
-                    className="flex items-center justify-between rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm"
+                    href={`/dashboard/courses/${course.slug}/assessment/results/${attempt.id}`}
+                    className="flex items-center justify-between rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm hover:border-navy-800"
                   >
                     <span className="text-slate-700">
                       {attempt.correctCount}/{attempt.totalQuestions} correct &middot; {attempt.scorePercentage}%
@@ -72,7 +73,7 @@ export default async function DashboardCourseAssessmentPage({ params }: { params
                     >
                       {attempt.passed ? 'Passed' : 'Not passed'}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </section>
@@ -83,7 +84,7 @@ export default async function DashboardCourseAssessmentPage({ params }: { params
               {pastAttempts.length > 0 ? 'Retake the assessment' : 'Take the assessment'}
             </h2>
             <p className="mb-3 text-xs text-slate-500">Passing score: {assessment.passingScorePercentage}%</p>
-            <AssessmentAttemptForm courseId={course.id} assessment={toLearnerView(assessment)} />
+            <AssessmentAttemptForm courseId={course.id} courseSlug={course.slug} assessment={toLearnerView(assessment)} />
           </section>
         </>
       )}

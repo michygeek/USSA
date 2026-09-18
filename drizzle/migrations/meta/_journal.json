@@ -36,6 +36,13 @@
       "when": 1789653036361,
       "tag": "0004_sticky_salo",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789731397355,
+      "tag": "0005_square_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

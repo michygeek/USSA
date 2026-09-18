@@ -1,6 +1,7 @@
 import { getAuthenticatedUserFromSession } from '@/features/auth/get-authenticated-user';
 import { listAllUsers } from '@/features/admin/user-queries';
 import { UserRoleSelect } from '@/features/admin/user-role-select';
+import { DeleteUserButton } from '@/features/admin/delete-user-button';
 import { DashboardSearchForm } from '@/features/dashboard/dashboard-search-form';
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -26,6 +27,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Joined</th>
               <th className="px-4 py-3">Role</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -38,6 +40,13 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 </td>
                 <td className="px-4 py-3">
                   <UserRoleSelect userId={userRow.id} currentRole={userRow.role} disabled={userRow.id === authenticatedUser?.userId} />
+                </td>
+                <td className="px-4 py-3">
+                  <DeleteUserButton
+                    userId={userRow.id}
+                    displayName={userRow.displayName}
+                    disabled={userRow.id === authenticatedUser?.userId}
+                  />
                 </td>
               </tr>
             ))}

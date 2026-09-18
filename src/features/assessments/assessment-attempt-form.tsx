@@ -6,7 +6,15 @@ import { submitAssessmentAttempt, type SubmittedAnswer } from './submit-assessme
 import { Button } from '@/components/ui/button';
 import type { AssessmentForLearner } from './assessment-types';
 
-export function AssessmentAttemptForm({ courseId, assessment }: { courseId: string; assessment: AssessmentForLearner }) {
+export function AssessmentAttemptForm({
+  courseId,
+  courseSlug,
+  assessment,
+}: {
+  courseId: string;
+  courseSlug: string;
+  assessment: AssessmentForLearner;
+}) {
   const router = useRouter();
   const [selectedChoiceByQuestionId, setSelectedChoiceByQuestionId] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,11 +31,10 @@ export function AssessmentAttemptForm({ courseId, assessment }: { courseId: stri
         questionId: question.id,
         selectedChoiceId: selectedChoiceByQuestionId[question.id]!,
       }));
-      await submitAssessmentAttempt(courseId, answers);
-      router.refresh();
+      const attempt = await submitAssessmentAttempt(courseId, answers);
+      router.push(`/dashboard/courses/${courseSlug}/assessment/results/${attempt.id}`);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Failed to submit assessment.');
-    } finally {
       setIsSubmitting(false);
     }
   }

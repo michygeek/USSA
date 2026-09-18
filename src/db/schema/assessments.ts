@@ -56,7 +56,7 @@ export const assessmentAttempts = pgTable(
       .references(() => courseAssessments.id, { onDelete: 'cascade' }),
     userId: uuid('user_id')
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: 'cascade' }),
     correctCount: integer('correct_count').notNull(),
     totalQuestions: integer('total_questions').notNull(),
     scorePercentage: integer('score_percentage').notNull(),
